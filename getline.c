@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <string.h>
 
 #define MAX_COMMAND_LENGTH 100
@@ -10,39 +13,44 @@
  */
 int main(void)
 {
-	char *command = NULL;
-	size_t command_length = 0;
+	char command[MAX_COMMAND_LENGTH];
+	int status;
 
 	while (1)
 	{
-		printf("$");
-		fflush(stdout);
+		printf("$ ");
 
-
-		ssize_t input_length = getline(&command, &command_length, stdin);
-
-
-	if (input_length == -1)
+	if (fgets(command, sizeof(command), stdin) == NULL)
 	{
+
+		printf("\n");
 		break;
 	}
 
-
 	command[strcspn(command, "\n")] = '\0';
 
-
-	if (strcmp(command, "") == 0)
+		pid_t pid = fork();
+	if (pid == -1)
 	{
-		continue;
+		perror("fork");
+		exit(EXIT_FAILURE);
 	}
-	else if (system(command) == -1)
+	else if (pid == 0)
 	{
-		fprintf(stderr, "Error executing command: %s\n", command);
+
+		if (execlp(command, command, (char *)NULL) == -1)
+		{
+
+			perror(command);
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+
+		waitpid(pid, &status, 0);
+	}
 	}
 
-
-	}
-
-	free(command);
 	return (0);
 }
