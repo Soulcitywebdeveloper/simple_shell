@@ -15,7 +15,7 @@ int main(void)
 
 	while (1)
 	{
-		printf("Enter a command: ");
+		printf("$");
 		fflush(stdout);
 
 
