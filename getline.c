@@ -4,51 +4,45 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <string.h>
-
-#define MAX_COMMAND_LENGTH 100
 /**
- * main - accept input
+ * main - Entry point
  *
- * Return: Always 0.
+ * Return: 0 on success.
  */
 int main(void)
 {
-	char command[MAX_COMMAND_LENGTH];
+	char command[100];
 	int status;
 
 	while (1)
 	{
-		printf("$ ");
-
-	if (fgets(command, sizeof(command), stdin) == NULL)
-	{
-
-		printf("\n");
+		printf("#simple_shell$ ");
+		if (fgets(command, sizeof(command), stdin) == NULL)
+		{
 		break;
-	}
+		}
 
 	command[strcspn(command, "\n")] = '\0';
 
-		pid_t pid = fork();
-	if (pid == -1)
+	pid_t child_pid = fork();
+
+	if (child_pid == -1)
 	{
 		perror("fork");
 		exit(EXIT_FAILURE);
 	}
-	else if (pid == 0)
-	{
 
+	if (child_pid == 0)
+	{
 		if (execlp(command, command, (char *)NULL) == -1)
 		{
-
-			perror(command);
+			perror("execlp");
 			exit(EXIT_FAILURE);
 		}
 	}
 	else
 	{
-
-		waitpid(pid, &status, 0);
+		wait(&status);
 	}
 	}
 
