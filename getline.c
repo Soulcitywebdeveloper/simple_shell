@@ -13,6 +13,7 @@ int main(void)
 {
 	char command[100];
 	int status;
+	pid_t child_pid;
 
 	while (1)
 	{
@@ -24,7 +25,7 @@ int main(void)
 
 	command[strcspn(command, "\n")] = '\0';
 
-	pid_t child_pid = fork();
+	child_pid = fork();
 
 	if (child_pid == -1)
 	{
